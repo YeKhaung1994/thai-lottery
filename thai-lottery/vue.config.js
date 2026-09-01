@@ -6,8 +6,9 @@ module.exports = defineConfig({
     historyApiFallback: true,
     proxy: {
       // GLO sends no CORS headers, so the browser can't call it directly.
+      // Target is overridable via GLO_PROXY_TARGET in .env.local.
       '/glo': {
-        target: 'https://www.glo.or.th',
+        target: process.env.GLO_PROXY_TARGET || 'https://www.glo.or.th',
         changeOrigin: true,
         pathRewrite: { '^/glo': '' }
       }

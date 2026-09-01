@@ -26,6 +26,7 @@
         <div class="prize-grid">
           <PrizeCard v-for="prize in secondaryPrizes" :key="prize.id" :prize="prize" :collapse-at="5" />
         </div>
+        <router-link class="open-draw" :to="`/winners/${date}`">Open draw page →</router-link>
       </template>
     </div>
   </article>
@@ -160,6 +161,21 @@ export default {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+}
+
+.open-draw {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #b45309;
+  text-decoration: none;
+}
+
+.open-draw:hover {
+  color: #92400e;
 }
 
 @media (max-width: 767px) {

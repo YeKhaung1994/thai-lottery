@@ -14,7 +14,10 @@
       </label>
       <label class="date-field">
         <span class="sr-only">Filter by draw date</span>
-        <input v-model="selectedDate" type="date" />
+        <select v-model="selectedDate">
+          <option :value="null">All draw dates</option>
+          <option v-for="date in dates" :key="date" :value="date">{{ formatDrawDate(date) }}</option>
+        </select>
       </label>
       <button v-if="searchQuery || selectedDate" type="button" class="clear" @click="clearFilters">Clear filters</button>
     </div>
@@ -53,7 +56,7 @@
 
 <script>
 import DrawCard from '@/components/DrawCard.vue'
-import { getDrawByDate, getDrawDates } from '@/services/lotteryApi'
+import { formatDrawDate, getDrawByDate, getDrawDates } from '@/services/lotteryApi'
 
 const PAGE_SIZE = 6
 
@@ -108,6 +111,7 @@ export default {
     this.loadDates()
   },
   methods: {
+    formatDrawDate,
     async loadDates() {
       this.listError = null
       try {
@@ -180,18 +184,20 @@ export default {
 }
 
 .search-field input,
-.date-field input {
+.date-field select {
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
   border: 1px solid #c9c9c9;
   border-radius: 6px;
+  font: inherit;
   font-size: 16px;
   box-sizing: border-box;
+  background: #ffffff;
 }
 
 .search-field input:focus,
-.date-field input:focus {
+.date-field select:focus {
   outline: 2px solid #d97706;
   outline-offset: 1px;
 }

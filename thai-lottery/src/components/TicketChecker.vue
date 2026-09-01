@@ -1,7 +1,10 @@
 <template>
   <section class="ticket-checker">
     <h2>Check your ticket</h2>
-    <p class="hint">Enter your 6-digit number and see instantly if you won any prize in the latest draw.</p>
+    <p class="hint">
+      Enter your 6-digit number and see instantly if it won any prize in
+      {{ draw ? `the draw of ${dateLabel}` : 'the latest draw' }}.
+    </p>
     <form class="check-form" @submit.prevent="check">
       <label class="sr-only" for="ticket-number">Ticket number</label>
       <input
@@ -17,19 +20,24 @@
       />
       <button type="submit" :disabled="!draw">Check</button>
     </form>
-    <p v-if="invalid" class="result miss">Please enter exactly 6 digits.</p>
+    <p v-if="invalid" class="result miss" role="status">Please enter exactly 6 digits.</p>
     <template v-else-if="result !== null">
-      <p v-if="result.length" class="result win">
+      <p v-if="result.length" class="result win" role="status">
         You won{{ result.length > 1 ? ` ${result.length} prizes` : '' }}:
         <span v-for="(win, index) in result" :key="win.name">{{ index ? ' + ' : '' }}{{ win.name }} ({{ formatBaht(win.reward) }})</span>
       </p>
-      <p v-else class="result miss">No prize this draw ({{ dateLabel }}). Better luck next time!</p>
+      <p v-else class="result miss" role="status">No prize in this draw ({{ dateLabel }}). Better luck next time!</p>
+      <button v-if="!alreadySaved" type="button" class="save" @click="saveTicket">
+        Save to My Tickets
+      </button>
+      <p v-else class="saved-note">Saved to My Tickets — it will be checked against every new draw.</p>
     </template>
   </section>
 </template>
 
 <script>
 import { checkTicket, formatBaht, formatDrawDate } from '@/services/lotteryApi'
+import { useMyTickets } from '@/composables/useMyTickets'
 
 export default {
   name: 'TicketChecker',
@@ -38,6 +46,10 @@ export default {
       type: Object,
       default: null
     }
+  },
+  setup() {
+    const { tickets, add } = useMyTickets()
+    return { savedTickets: tickets, addTicket: add }
   },
   data() {
     return {
@@ -49,6 +61,9 @@ export default {
   computed: {
     dateLabel() {
       return this.draw ? formatDrawDate(this.draw.date) : ''
+    },
+    alreadySaved() {
+      return this.savedTickets.includes(this.ticket.trim())
     }
   },
   methods: {
@@ -58,6 +73,9 @@ export default {
       const wins = checkTicket(this.draw, this.ticket.trim())
       this.invalid = wins === null
       this.result = wins
+    },
+    saveTicket() {
+      this.addTicket(this.ticket.trim())
     }
   }
 }
@@ -137,10 +155,50 @@ export default {
 }
 
 .result.win {
-  color: #d97706;
+  color: #d2232a;
+  font-size: 17px;
+  animation: win-pop 0.35s ease;
+}
+
+@keyframes win-pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .result.miss {
+  color: #6b6b6b;
+}
+
+.save {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #2b2b2b;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save:hover {
+  border-color: #d97706;
+  color: #b45309;
+}
+
+.saved-note {
+  margin: 0;
+  font-size: 14px;
   color: #6b6b6b;
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="digit-tiles" :class="{ small: size === 'small' }">
+  <div class="digit-tiles" :class="{ small: size === 'small', accent }">
     <span v-for="(digit, index) in digits" :key="index" class="tile">{{ digit }}</span>
   </div>
 </template>
@@ -15,6 +15,10 @@ export default {
     size: {
       type: String,
       default: 'large'
+    },
+    accent: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -43,6 +47,10 @@ export default {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   background: #ffffff;
+}
+
+.accent .tile {
+  color: #d2232a;
 }
 
 .small .tile {

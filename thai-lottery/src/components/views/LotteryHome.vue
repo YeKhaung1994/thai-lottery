@@ -5,7 +5,7 @@
         <template v-if="draw">
           <p class="eyebrow">Latest draw · {{ dateLabel }}</p>
           <h1>First Prize Winning Number</h1>
-          <DigitTiles :number="draw.firstPrize" />
+          <DigitTiles :number="draw.firstPrize" accent />
           <p class="reward">Prize: {{ formatBaht(draw.firstReward) }}</p>
         </template>
         <template v-else-if="loading">
@@ -22,7 +22,7 @@
       <TicketChecker :draw="draw" />
     </div>
 
-    <!-- <ImageSlider /> -->
+    <MyTickets :draw="draw" />
 
     <section v-if="draw" class="glance">
       <h2>Latest draw at a glance</h2>
@@ -57,7 +57,7 @@
       </div>
       <p v-if="recentError" class="recent-note">{{ recentError }}</p>
       <div v-else class="recent-list">
-        <router-link v-for="item in recentDraws" :key="item.date" class="recent-row" to="/results">
+        <router-link v-for="item in recentDraws" :key="item.date" class="recent-row" :to="`/winners/${item.date}`">
           <span>{{ formatDrawDate(item.date) }}</span>
           <span class="recent-number">First prize: {{ item.firstPrize || '…' }}</span>
           <span class="recent-more">details ›</span>
@@ -70,13 +70,13 @@
 <script>
 import DigitTiles from '@/components/DigitTiles.vue'
 import TicketChecker from '@/components/TicketChecker.vue'
-// import ImageSlider from './ImageSlider.vue' // re-enable with the <ImageSlider /> tag above
+import MyTickets from '@/components/MyTickets.vue'
 import { useLatestDraw } from '@/composables/useLatestDraw'
 import { formatBaht, formatDrawDate, getDrawByDate, getDrawDates } from '@/services/lotteryApi'
 
 export default {
   name: 'LotteryHome',
-  components: { DigitTiles, TicketChecker },
+  components: { DigitTiles, TicketChecker, MyTickets },
   setup() {
     const { draw, loading, error, retry } = useLatestDraw()
     return { draw, loading, error, retry }

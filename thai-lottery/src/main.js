@@ -7,15 +7,22 @@ import LotteryWinners from './components/views/LotteryWinners.vue'
 import AboutUs from './components/views/AboutUs.vue'
 
 const routes = [
-  { path: '/', component: LotteryHome },
-  { path: '/results', component: LotteryResults },
-  { path: '/winners', component: LotteryWinners },
-  { path: '/about', component: AboutUs }
+  { path: '/', component: LotteryHome, meta: { title: 'ထောပြီ — Thai Lottery Results' } },
+  { path: '/results', component: LotteryResults, meta: { title: 'ထောပြီ — Draw History' } },
+  { path: '/winners/:date?', component: LotteryWinners, meta: { title: 'ထောပြီ — Winning Numbers' } },
+  { path: '/about', component: AboutUs, meta: { title: 'ထောပြီ — About' } }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
+})
+
+router.afterEach((to) => {
+  document.title = to.meta.title || 'ထောပြီ'
 })
 
 createApp(App).use(router).mount('#app')

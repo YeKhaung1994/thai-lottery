@@ -1,7 +1,7 @@
 <template>
   <div class="winners">
     <div class="winners-header">
-      <h1>Winning Numbers</h1>
+      <h1>Draw Details</h1>
       <div class="draw-picker">
         <button type="button" aria-label="Newer draw" :disabled="selectedIndex <= 0" @click="step(-1)">‹</button>
         <label>
@@ -102,7 +102,7 @@ export default {
       if (next) this.selectedDate = next
     },
     syncRoute() {
-      const target = `/winners/${this.selectedDate}`
+      const target = `/draws/${this.selectedDate}`
       if (this.$route.path !== target) this.$router.replace(target)
     },
     async init() {

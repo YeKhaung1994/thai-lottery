@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>About</h1>
+    <h1>How It Works</h1>
     <p>
       ထောပြီ is an unofficial viewer for Thailand Government Lottery results. It shows the
       latest draw, past results, and winning numbers, and checks your tickets against every
@@ -45,6 +45,34 @@
       GLO headquarters in Bangkok or at authorized banks. Prizes are subject to a 0.5% stamp
       duty (government lottery). Bring the physical ticket and your ID.
     </p>
+
+    <h2>Frequently asked questions</h2>
+    <dl class="faq">
+      <dt>When are results announced?</dt>
+      <dd>
+        Draws are held on the 1st and 16th of each month, with results usually announced from
+        around 14:30 Thailand time. On draw days the home page refreshes automatically until
+        the new numbers arrive.
+      </dd>
+      <dt>Is this the official lottery site?</dt>
+      <dd>
+        No — ထောပြီ is an independent viewer. The numbers come live from the official
+        Government Lottery Office, but only the GLO's own publication is authoritative.
+      </dd>
+      <dt>Can one ticket win more than one prize?</dt>
+      <dd>
+        Yes. The running-number prizes stack: a ticket can match the 3-digit front and
+        3-digit back and the 2-digit at the same time. The ticket checker reports every
+        prize your number matches.
+      </dd>
+      <dt>Where are my saved tickets stored?</dt>
+      <dd>
+        Only in your own browser, on this device. Nothing is uploaded — clearing your
+        browser data removes them.
+      </dd>
+      <dt>How long do I have to claim a prize?</dt>
+      <dd>Two years from the draw date. After that the prize is forfeited to the state.</dd>
+    </dl>
 
     <p class="disclaimer">
       This site is not affiliated with the GLO. Always verify winning tickets against the
@@ -129,6 +157,26 @@ td:last-child {
 .note {
   font-size: 14px;
   color: #6b6b6b;
+}
+
+.faq {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.faq dt {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.faq dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #514a3d;
 }
 
 .disclaimer {

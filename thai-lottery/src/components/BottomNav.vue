@@ -7,30 +7,22 @@
       </svg>
       <span>Home</span>
     </router-link>
-    <router-link to="/results">
+    <router-link to="/history">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="4" y="3" width="16" height="18" rx="2"></rect>
         <line x1="8" y1="8" x2="16" y2="8"></line>
         <line x1="8" y1="12" x2="16" y2="12"></line>
         <line x1="8" y1="16" x2="13" y2="16"></line>
       </svg>
-      <span>Results</span>
+      <span>History</span>
     </router-link>
-    <router-link to="/winners">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M6 3 H18 V8 A6 6 0 0 1 6 8 Z"></path>
-        <line x1="12" y1="14" x2="12" y2="18"></line>
-        <line x1="8" y1="21" x2="16" y2="21"></line>
-      </svg>
-      <span>Winners</span>
-    </router-link>
-    <router-link to="/about">
+    <router-link to="/how-it-works">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="12" r="9"></circle>
         <line x1="12" y1="11" x2="12" y2="17"></line>
         <line x1="12" y1="7" x2="12" y2="7.01"></line>
       </svg>
-      <span>About</span>
+      <span>How It Works</span>
     </router-link>
   </nav>
 </template>

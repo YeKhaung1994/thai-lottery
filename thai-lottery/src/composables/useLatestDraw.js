@@ -32,7 +32,25 @@ export function useLatestDraw() {
     return load()
   }
 
+  // Re-fetch without clearing the current draw — no loading flash. Used by
+  // draw-day polling.
+  function refresh() {
+    if (inflight) return inflight
+    inflight = getLatestDraw()
+      .then((result) => {
+        draw.value = result
+        error.value = null
+      })
+      .catch(() => {
+        // Keep showing the last known draw; the next poll retries.
+      })
+      .finally(() => {
+        inflight = null
+      })
+    return inflight
+  }
+
   load()
 
-  return { draw: readonly(draw), loading: readonly(loading), error: readonly(error), retry }
+  return { draw: readonly(draw), loading: readonly(loading), error: readonly(error), retry, refresh }
 }

@@ -26,7 +26,7 @@
         <div class="prize-grid">
           <PrizeCard v-for="prize in secondaryPrizes" :key="prize.id" :prize="prize" :collapse-at="5" />
         </div>
-        <router-link class="open-draw" :to="`/winners/${date}`">Open draw page →</router-link>
+        <router-link class="open-draw" :to="`/draws/${date}`">Open draw details →</router-link>
       </template>
     </div>
   </article>

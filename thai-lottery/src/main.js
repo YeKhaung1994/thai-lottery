@@ -8,9 +8,13 @@ import AboutUs from './components/views/AboutUs.vue'
 
 const routes = [
   { path: '/', component: LotteryHome, meta: { title: 'ထောပြီ — Thai Lottery Results' } },
-  { path: '/results', component: LotteryResults, meta: { title: 'ထောပြီ — Draw History' } },
-  { path: '/winners/:date?', component: LotteryWinners, meta: { title: 'ထောပြီ — Winning Numbers' } },
-  { path: '/about', component: AboutUs, meta: { title: 'ထောပြီ — About' } }
+  { path: '/history', component: LotteryResults, meta: { title: 'ထောပြီ — Draw History' } },
+  { path: '/draws/:date?', component: LotteryWinners, meta: { title: 'ထောပြီ — Draw Details' } },
+  { path: '/how-it-works', component: AboutUs, meta: { title: 'ထောပြီ — How It Works' } },
+  // Old paths keep working after the module renames.
+  { path: '/results', redirect: '/history' },
+  { path: '/about', redirect: '/how-it-works' },
+  { path: '/winners/:date?', redirect: (to) => (to.params.date ? `/draws/${to.params.date}` : '/draws') }
 ]
 
 const router = createRouter({

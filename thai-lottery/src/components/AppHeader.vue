@@ -5,9 +5,8 @@
     </router-link>
     <nav class="top-nav" aria-label="Main navigation">
       <router-link to="/">Home</router-link>
-      <router-link to="/results">Results</router-link>
-      <router-link to="/winners">Winners</router-link>
-      <router-link to="/about">About</router-link>
+      <router-link to="/history">History</router-link>
+      <router-link to="/how-it-works">How It Works</router-link>
     </nav>
   </header>
 </template>

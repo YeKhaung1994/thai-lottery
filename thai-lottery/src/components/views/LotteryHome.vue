@@ -7,6 +7,9 @@
           <h1>First Prize Winning Number</h1>
           <DigitTiles :number="draw.firstPrize" accent />
           <p class="reward">Prize: {{ formatBaht(draw.firstReward) }}</p>
+          <p v-if="awaitingResults" class="draw-day-note">
+            Draw day — new results usually appear from 14:30 (Thailand time). This page refreshes automatically.
+          </p>
         </template>
         <template v-else-if="loading">
           <p class="eyebrow">Latest draw</p>
@@ -19,10 +22,10 @@
           <button type="button" class="retry" @click="retry">Try again</button>
         </template>
       </section>
-      <TicketChecker :draw="draw" />
+      <MyTickets :draw="draw" />
     </div>
 
-    <MyTickets :draw="draw" />
+    <TicketChecker :draw="draw" />
 
     <section v-if="draw" class="glance">
       <h2>Latest draw at a glance</h2>
@@ -53,11 +56,11 @@
     <section class="recent">
       <div class="recent-header">
         <h2>Recent draws</h2>
-        <router-link to="/results">View all results →</router-link>
+        <router-link to="/history">View draw history →</router-link>
       </div>
       <p v-if="recentError" class="recent-note">{{ recentError }}</p>
       <div v-else class="recent-list">
-        <router-link v-for="item in recentDraws" :key="item.date" class="recent-row" :to="`/winners/${item.date}`">
+        <router-link v-for="item in recentDraws" :key="item.date" class="recent-row" :to="`/draws/${item.date}`">
           <span>{{ formatDrawDate(item.date) }}</span>
           <span class="recent-number">First prize: {{ item.firstPrize || '…' }}</span>
           <span class="recent-more">details ›</span>
@@ -79,8 +82,8 @@ export default {
   name: 'LotteryHome',
   components: { AppIcon, DigitTiles, TicketChecker, MyTickets },
   setup() {
-    const { draw, loading, error, retry } = useLatestDraw()
-    return { draw, loading, error, retry }
+    const { draw, loading, error, retry, refresh } = useLatestDraw()
+    return { draw, loading, error, retry, refresh }
   },
   data() {
     return {
@@ -91,6 +94,17 @@ export default {
   computed: {
     dateLabel() {
       return this.draw ? formatDrawDate(this.draw.date) : ''
+    },
+    bangkokToday() {
+      // en-CA gives YYYY-MM-DD, matching the API's date format.
+      return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' })
+    },
+    isDrawDay() {
+      const day = this.bangkokToday.slice(8)
+      return day === '01' || day === '16'
+    },
+    awaitingResults() {
+      return this.isDrawDay && (!this.draw || this.draw.date !== this.bangkokToday)
     },
     nextDrawDate() {
       // Draws are on the 1st and 16th of each month.
@@ -118,6 +132,16 @@ export default {
   },
   created() {
     this.loadRecent()
+  },
+  mounted() {
+    // Draw-day mode: poll until today's results are announced.
+    this.pollTimer = setInterval(() => {
+      if (!this.awaitingResults) return
+      this.refresh()
+    }, 60000)
+  },
+  beforeUnmount() {
+    clearInterval(this.pollTimer)
   },
   methods: {
     formatBaht,
@@ -191,6 +215,16 @@ export default {
 .reward {
   margin: 0;
   font-size: 18px;
+}
+
+.draw-day-note {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--teal-tint);
+  border: 1px solid #cde7ed;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #23808f;
 }
 
 .retry {

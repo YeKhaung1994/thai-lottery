@@ -1,6 +1,6 @@
 <template>
   <div class="results">
-    <h1>Lottery Results</h1>
+    <h1>Draw History</h1>
 
     <div class="filter-bar">
       <label class="search-field">
@@ -29,27 +29,34 @@
     <p v-else-if="!dates.length" class="status">Loading draw history…</p>
     <template v-else>
       <p v-if="searchQuery" class="status">
-        Showing draws on this page where <strong>{{ searchQuery }}</strong> appears among the winning numbers.
+        Showing loaded draws where <strong>{{ searchQuery }}</strong> appears among the winning numbers.
       </p>
-      <div class="draw-list">
-        <DrawCard
-          v-for="date in visibleDates"
-          :key="date"
-          :date="date"
-          :draw="draws[date] || null"
-          :loading="loadingDates.includes(date)"
-          :error="drawErrors[date] || null"
-          :expanded="expandedDate === date"
-          @toggle="toggleDraw(date)"
-          @retry="fetchDraw(date)"
-        />
-      </div>
-      <p v-if="!visibleDates.length" class="status">No draws match the current filters.</p>
-      <div v-if="!selectedDate && totalPages > 1" class="pagination">
-        <button type="button" :disabled="page === 1" @click="page -= 1">‹ Prev</button>
-        <span>Page {{ page }} of {{ totalPages }}</span>
-        <button type="button" :disabled="page === totalPages" @click="page += 1">Next ›</button>
-      </div>
+      <section v-for="group in visibleGroups" :key="group.key" class="month-group">
+        <h2 class="month-heading">{{ group.label }}</h2>
+        <div class="draw-list">
+          <DrawCard
+            v-for="date in datesToShow(group)"
+            :key="date"
+            :date="date"
+            :draw="draws[date] || null"
+            :loading="loadingDates.includes(date)"
+            :error="drawErrors[date] || null"
+            :expanded="expandedDate === date"
+            @toggle="toggleDraw(date)"
+            @retry="fetchDraw(date)"
+          />
+          <p v-if="!datesToShow(group).length" class="status">No draws in {{ group.label }} match the search.</p>
+        </div>
+      </section>
+      <p v-if="!visibleGroups.length" class="status">No draws match the current filters.</p>
+      <button
+        v-if="!selectedDate && visibleGroups.length < groupedMonths.length"
+        type="button"
+        class="load-more"
+        @click="monthsShown += 3"
+      >
+        Show earlier months ▾
+      </button>
     </template>
   </div>
 </template>
@@ -57,8 +64,6 @@
 <script>
 import DrawCard from '@/components/DrawCard.vue'
 import { formatDrawDate, getDrawByDate, getDrawDates } from '@/services/lotteryApi'
-
-const PAGE_SIZE = 6
 
 export default {
   name: 'LotteryResults',
@@ -73,7 +78,7 @@ export default {
       expandedDate: null,
       searchQuery: '',
       selectedDate: null,
-      page: 1
+      monthsShown: 3
     }
   },
   computed: {
@@ -83,28 +88,30 @@ export default {
       }
       return this.dates
     },
-    totalPages() {
-      return Math.max(1, Math.ceil(this.filteredDates.length / PAGE_SIZE))
+    groupedMonths() {
+      const groups = []
+      for (const date of this.filteredDates) {
+        const key = date.slice(0, 7)
+        let group = groups[groups.length - 1]
+        if (!group || group.key !== key) {
+          group = { key, label: this.monthLabel(date), dates: [] }
+          groups.push(group)
+        }
+        group.dates.push(date)
+      }
+      return groups
     },
-    pageDates() {
-      const start = (this.page - 1) * PAGE_SIZE
-      return this.filteredDates.slice(start, start + PAGE_SIZE)
+    visibleGroups() {
+      if (this.selectedDate) return this.groupedMonths
+      return this.groupedMonths.slice(0, this.monthsShown)
     },
     visibleDates() {
-      if (!this.searchQuery) return this.pageDates
-      return this.pageDates.filter((date) => {
-        const draw = this.draws[date]
-        return draw ? this.drawMatches(draw, this.searchQuery) : false
-      })
+      return this.visibleGroups.flatMap((group) => group.dates)
     }
   },
   watch: {
-    page() {
-      this.fetchPage()
-    },
-    selectedDate() {
-      this.page = 1
-      this.fetchPage()
+    visibleDates(dates) {
+      dates.forEach((date) => this.fetchDraw(date))
     }
   },
   created() {
@@ -112,17 +119,25 @@ export default {
   },
   methods: {
     formatDrawDate,
+    monthLabel(isoDate) {
+      const d = new Date(`${isoDate}T00:00:00`)
+      return d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    },
+    datesToShow(group) {
+      if (!this.searchQuery) return group.dates
+      return group.dates.filter((date) => {
+        const draw = this.draws[date]
+        return draw ? this.drawMatches(draw, this.searchQuery) : false
+      })
+    },
     async loadDates() {
       this.listError = null
       try {
         this.dates = await getDrawDates()
-        this.fetchPage()
+        this.visibleDates.forEach((date) => this.fetchDraw(date))
       } catch (err) {
         this.listError = err.message || 'Could not load draw history'
       }
-    },
-    fetchPage() {
-      this.pageDates.forEach((date) => this.fetchDraw(date))
     },
     async fetchDraw(date) {
       if (this.draws[date] || this.loadingDates.includes(date)) return
@@ -152,7 +167,6 @@ export default {
     clearFilters() {
       this.searchQuery = ''
       this.selectedDate = null
-      this.page = 1
     }
   }
 }
@@ -188,8 +202,8 @@ export default {
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
-  border: 1px solid #c9c9c9;
-  border-radius: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   font: inherit;
   font-size: 16px;
   box-sizing: border-box;
@@ -219,7 +233,7 @@ export default {
 
 .status {
   margin: 0;
-  color: #6b6b6b;
+  color: var(--muted);
 }
 
 .status.error {
@@ -231,11 +245,26 @@ export default {
   padding: 0 12px;
   margin-left: 8px;
   border: 1px solid #2b2b2b;
-  border-radius: 6px;
+  border-radius: 8px;
   background: none;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.month-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.month-heading {
+  margin: 8px 0 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .draw-list {
@@ -244,28 +273,21 @@ export default {
   gap: 12px;
 }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-}
-
-.pagination button {
-  min-height: 44px;
-  padding: 0 16px;
+.load-more {
+  align-self: center;
+  min-height: 48px;
+  padding: 0 24px;
   border: 1px solid #2b2b2b;
-  border-radius: 6px;
-  background: none;
+  border-radius: 8px;
+  background: #ffffff;
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
 
-.pagination button:disabled {
-  border-color: #c9c9c9;
-  color: #c9c9c9;
-  cursor: not-allowed;
+.load-more:hover {
+  border-color: #d97706;
+  color: #b45309;
 }
 
 .sr-only {

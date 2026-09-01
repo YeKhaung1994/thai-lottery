@@ -93,3 +93,19 @@ Feedback / refinements:
 | 7 | Burmese localization plan (EN|MM toggle) | Owner/Designer | 2–3 |
 | 8 | GLO outage mitigation (cached snapshots) | PM | 3 |
 | 9 | Legal/jurisdiction check before public launch | Owner | Before launch |
+
+---
+
+## Implementation status (updated post-meeting, 1 Sep 2026)
+
+| # | Action | Status |
+|---|--------|--------|
+| 1 | Commit to branch | ✅ Done — committed on `redesign` branch (push/PR/tag pending repo access) |
+| 2 | Production proxy | ✅ Configs added — `netlify.toml` and `vercel.json` proxy `/glo` → glo.or.th with SPA fallback; deploy target choice still open |
+| 3 | Tests + CI | ✅ Done — 12 Jest unit tests for `normalizeDraw`/`checkTicket`/formatters against a real GLO response fixture, all passing; GitHub Actions CI runs lint + test + build |
+| 4 | README refresh | ✅ Done — rewritten for ထောပြီ, GLO endpoints, proxy setup, test/build scripts |
+| 5 | Accent color stance | ✅ Decided — UI accent stays amber `#d97706` (the logo gold `#F2B01E` fails WCAG contrast on white, ~2:1); red `#D2232A` is reserved for the brand mark only |
+| 6 | Slider fate | ⏸ Deferred — hidden by owner decision; component and images retained for a purposeful phase-2 redesign |
+| 7 | Burmese localization | 📋 Backlog phase 2–3 |
+| 8 | GLO outage mitigation | 📋 Backlog phase 3 |
+| 9 | Legal check | 📋 Owner, before launch |

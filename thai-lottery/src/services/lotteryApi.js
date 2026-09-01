@@ -21,7 +21,7 @@ const PRIZE_META = [
 ]
 
 // GLO shape: response.data.<group> = { price: "6000000.00", number: [{round, value}] }
-function normalizeDraw(response) {
+export function normalizeDraw(response) {
   const data = response.data || {}
   const numbersOf = (key) => ((data[key] && data[key].number) || []).map((n) => n.value).sort()
   const rewardOf = (key) => (data[key] ? Math.round(parseFloat(data[key].price)) : 0)

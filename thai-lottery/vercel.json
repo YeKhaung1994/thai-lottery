@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/glo/:path*", "destination": "https://www.glo.or.th/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

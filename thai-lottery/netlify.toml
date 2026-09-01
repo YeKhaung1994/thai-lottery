@@ -1,0 +1,19 @@
+# Netlify deploy config.
+# The /glo proxy replicates the dev-server proxy in production: GLO sends no
+# CORS headers, so the SPA calls /glo/... on its own origin and Netlify
+# forwards server-side.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/glo/*"
+  to = "https://www.glo.or.th/:splat"
+  status = 200
+  force = true
+
+# History-mode SPA fallback: serve index.html for deep links like /winners.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

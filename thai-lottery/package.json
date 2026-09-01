@@ -38,7 +38,17 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {},
+    "overrides": [
+      {
+        "files": [
+          "tests/unit/**/*.spec.js"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "browserslist": [
     "> 1%",

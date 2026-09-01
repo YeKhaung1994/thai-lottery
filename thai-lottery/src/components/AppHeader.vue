@@ -1,7 +1,7 @@
 <template>
   <header class="app-header">
     <router-link to="/" class="brand">
-      <img class="brand-logo" src="../assets/htawpyi-tilt-transparent.png" alt="ထောပြီ" />
+      <img class="brand-logo" src="../assets/brand-ticket.svg" alt="ထောပြီ" />
     </router-link>
     <nav class="top-nav" aria-label="Main navigation">
       <router-link to="/">Home</router-link>

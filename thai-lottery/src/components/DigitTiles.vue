@@ -41,12 +41,13 @@ export default {
   justify-content: center;
   width: 56px;
   height: 68px;
-  border: 2px solid #2b2b2b;
-  border-radius: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   font-size: 38px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   background: #ffffff;
+  box-shadow: var(--shadow);
 }
 
 .accent .tile {

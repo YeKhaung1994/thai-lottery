@@ -1,7 +1,7 @@
 <template>
   <section class="my-tickets">
     <div class="tickets-header">
-      <h2>My tickets</h2>
+      <h2><AppIcon name="ticket" :size="20" class="heading-icon" /> My tickets</h2>
       <p class="hint">Saved on this device and checked against every new draw.</p>
     </div>
 
@@ -38,11 +38,13 @@
 </template>
 
 <script>
+import AppIcon from '@/components/AppIcon.vue'
 import { checkTicket, formatBaht } from '@/services/lotteryApi'
 import { useMyTickets } from '@/composables/useMyTickets'
 
 export default {
   name: 'MyTickets',
+  components: { AppIcon },
   props: {
     draw: {
       type: Object,
@@ -87,9 +89,22 @@ export default {
   flex-direction: column;
   gap: 14px;
   padding: 24px 28px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   text-align: left;
+}
+
+.my-tickets h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.heading-icon {
+  color: var(--red);
+  flex-shrink: 0;
 }
 
 .tickets-header {
@@ -176,8 +191,14 @@ export default {
   gap: 8px 16px;
   min-height: 48px;
   padding: 6px 14px;
-  border: 1px solid #eeeeee;
-  border-radius: 6px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.ticket-row:has(.ticket-status.win) {
+  background: var(--red-tint);
+  border-color: #f5d4d5;
 }
 
 .ticket-number {

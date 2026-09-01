@@ -28,8 +28,9 @@ export default {
   justify-content: space-between;
   gap: 16px;
   padding: 8px 48px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e2e2;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
 }
 
 .brand {

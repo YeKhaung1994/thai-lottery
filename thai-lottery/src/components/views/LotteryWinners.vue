@@ -21,9 +21,12 @@
     <p v-else-if="!draw" class="status">Loading winning numbers…</p>
     <template v-else>
       <section class="first-prize">
-        <div>
-          <p class="eyebrow">First Prize · {{ formatBaht(draw.firstReward) }}</p>
-          <p class="first-number">{{ draw.firstPrize }}</p>
+        <div class="first-block">
+          <AppIcon name="trophy" :size="34" class="trophy" />
+          <div>
+            <p class="eyebrow">First Prize · {{ formatBaht(draw.firstReward) }}</p>
+            <p class="first-number">{{ draw.firstPrize }}</p>
+          </div>
         </div>
         <div v-if="draw.adjacent.length" class="adjacent">
           <p class="eyebrow">Adjacent numbers · {{ formatBaht(draw.adjacentReward) }}</p>
@@ -46,6 +49,7 @@
 </template>
 
 <script>
+import AppIcon from '@/components/AppIcon.vue'
 import NumberChip from '@/components/NumberChip.vue'
 import PrizeCard from '@/components/PrizeCard.vue'
 import TicketChecker from '@/components/TicketChecker.vue'
@@ -53,7 +57,7 @@ import { formatBaht, formatDrawDate, getDrawByDate, getDrawDates, getLatestDraw 
 
 export default {
   name: 'LotteryWinners',
-  components: { NumberChip, PrizeCard, TicketChecker },
+  components: { AppIcon, NumberChip, PrizeCard, TicketChecker },
   data() {
     return {
       dates: [],
@@ -213,8 +217,21 @@ export default {
   justify-content: space-between;
   gap: 18px;
   padding: 22px 28px;
-  border: 2px solid #d97706;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #fef4da 0%, #ffffff 70%);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.first-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.trophy {
+  color: var(--gold);
+  flex-shrink: 0;
 }
 
 .eyebrow {

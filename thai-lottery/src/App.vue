@@ -19,9 +19,28 @@ export default {
 </script>
 
 <style>
+:root {
+  /* Palette derived from the htawpyi ticket logo. */
+  --ink: #2b2b2b;
+  --muted: #6b6455;
+  --red: #d2232a;
+  --red-tint: #fdeeee;
+  --amber: #d97706;
+  --amber-dark: #b45309;
+  --amber-tint: #fdf3e0;
+  --gold: #f2b01e;
+  --teal: #3aa6b9;
+  --teal-tint: #e9f5f8;
+  --cream: #faf6ec;
+  --card: #ffffff;
+  --line: #eee6d6;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(64, 48, 15, 0.06), 0 6px 16px rgba(64, 48, 15, 0.06);
+}
+
 body {
   margin: 0;
-  background: #ffffff;
+  background: var(--cream);
 }
 
 #app {
@@ -29,7 +48,7 @@ body {
   font-family: Avenir, Helvetica, Arial, 'Noto Sans Myanmar', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2b2b2b;
+  color: var(--ink);
   display: flex;
   flex-direction: column;
   min-height: 100vh;

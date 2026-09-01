@@ -105,14 +105,20 @@ table {
 th,
 td {
   padding: 10px 14px;
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--line);
   text-align: left;
   white-space: nowrap;
+  background: #ffffff;
 }
 
 th {
-  background: #faf7f2;
+  background: var(--amber-tint);
   font-weight: 700;
+}
+
+tbody tr:first-child td {
+  background: var(--red-tint);
+  font-weight: 600;
 }
 
 td:last-child {

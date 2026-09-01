@@ -56,9 +56,10 @@ export default {
   align-items: flex-start;
   gap: 12px;
   padding: 18px 20px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
   text-align: left;
 }
 

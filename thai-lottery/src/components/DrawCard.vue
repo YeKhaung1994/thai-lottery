@@ -79,9 +79,15 @@ export default {
 
 <style scoped>
 .draw-card {
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+
+.draw-card:hover {
+  border-color: var(--amber);
 }
 
 .draw-summary {

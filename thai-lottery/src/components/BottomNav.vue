@@ -55,7 +55,8 @@ export default {
     z-index: 20;
     display: flex;
     background: #ffffff;
-    border-top: 1px solid #e2e2e2;
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 16px rgba(64, 48, 15, 0.08);
     padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px)) 4px;
   }
 

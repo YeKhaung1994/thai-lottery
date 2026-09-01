@@ -1,6 +1,6 @@
 <template>
   <section class="ticket-checker">
-    <h2>Check your ticket</h2>
+    <h2><AppIcon name="search" :size="20" class="heading-icon" /> Check your ticket</h2>
     <p class="hint">
       Enter your 6-digit number and see instantly if it won any prize in
       {{ draw ? `the draw of ${dateLabel}` : 'the latest draw' }}.
@@ -36,11 +36,13 @@
 </template>
 
 <script>
+import AppIcon from '@/components/AppIcon.vue'
 import { checkTicket, formatBaht, formatDrawDate } from '@/services/lotteryApi'
 import { useMyTickets } from '@/composables/useMyTickets'
 
 export default {
   name: 'TicketChecker',
+  components: { AppIcon },
   props: {
     draw: {
       type: Object,
@@ -87,15 +89,24 @@ export default {
   flex-direction: column;
   gap: 10px;
   padding: 24px 28px;
-  border: 2px dashed #c9c9c9;
-  border-radius: 8px;
-  background: #ffffff;
+  border: 1px solid #f0ddb6;
+  border-radius: var(--radius);
+  background: var(--amber-tint);
+  box-shadow: var(--shadow);
   text-align: left;
 }
 
 .ticket-checker h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
   font-size: 22px;
+}
+
+.heading-icon {
+  color: var(--amber);
+  flex-shrink: 0;
 }
 
 .hint {
@@ -114,8 +125,9 @@ export default {
   min-width: 0;
   min-height: 48px;
   padding: 0 16px;
-  border: 2px solid #2b2b2b;
-  border-radius: 6px;
+  border: 1px solid #e0cfa4;
+  background: #ffffff;
+  border-radius: 8px;
   font-size: 20px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 4px;
@@ -130,7 +142,7 @@ export default {
   min-height: 48px;
   padding: 0 28px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #d97706;
   color: #ffffff;
   font: inherit;
@@ -183,8 +195,8 @@ export default {
   min-height: 44px;
   padding: 0 16px;
   border: 1px solid #2b2b2b;
-  border-radius: 6px;
-  background: none;
+  border-radius: 8px;
+  background: #ffffff;
   font: inherit;
   font-size: 15px;
   font-weight: 600;

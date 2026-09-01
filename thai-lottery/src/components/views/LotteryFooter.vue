@@ -28,9 +28,9 @@ export default {
   justify-content: space-between;
   gap: 12px 24px;
   padding: 20px 48px;
-  border-top: 1px solid #e2e2e2;
+  border-top: 1px solid var(--line);
   font-size: 14px;
-  color: #6b6b6b;
+  color: var(--muted);
 }
 
 .footer p {

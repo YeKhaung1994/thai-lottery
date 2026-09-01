@@ -23,17 +23,18 @@ export default {
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
-  border: 1px solid #c9c9c9;
-  border-radius: 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   font-size: 16px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: #2b2b2b;
-  background: #ffffff;
+  color: var(--ink);
+  background: var(--cream);
 }
 
 .number-chip.highlight {
-  border-color: #d97706;
-  color: #d97706;
+  border-color: var(--gold);
+  background: var(--amber-tint);
+  color: var(--red);
 }
 </style>

@@ -1,173 +1,248 @@
 <template>
-  <div class="lottery-winners">
-    <h1>Lottery Winners</h1>
-    <div class="winner-list">
-      <div class="card" v-for="(category, categoryIndex) in winners.prizes" :key="categoryIndex">
-         <h3 class="card-title">{{ category.name }}</h3>
-         <span class="card-subtitle">{{ category.number.length }}</span>
-       <div class="card-body" v-if="flag">
-          <div v-for="(subcategory, subcategoryIndex) in category.number" :key="subcategoryIndex">
-          <p class="card-text">{{ subcategory }}</p>
-          <!-- <ul>
-            <li v-for="(item, itemIndex) in subcategory.items" :key="itemIndex">
-              {{ item.name }} - {{ item.price }}
-            </li>
-          </ul> -->
-        </div>
+  <div class="winners">
+    <div class="winners-header">
+      <h1>Winning Numbers</h1>
+      <div class="draw-picker">
+        <button type="button" aria-label="Newer draw" :disabled="selectedIndex <= 0" @click="step(-1)">‹</button>
+        <label>
+          <span class="sr-only">Select draw</span>
+          <select v-model="selectedDate">
+            <option v-for="date in dates" :key="date" :value="date">{{ formatDrawDate(date) }}</option>
+          </select>
+        </label>
+        <button type="button" aria-label="Older draw" :disabled="selectedIndex >= dates.length - 1" @click="step(1)">›</button>
       </div>
-     
     </div>
-    <!-- <div class="card" v-for="winner in winners" :key="winner.id">
-      <div class="card-header">
-        <h3 class="card-title">{{ winner.name }}</h3>
-        <span class="card-subtitle">{{ winner.date }}</span>
+
+    <p v-if="error" class="status error">
+      {{ error }}
+      <button type="button" class="retry" @click="load">Retry</button>
+    </p>
+    <p v-else-if="!draw" class="status">Loading winning numbers…</p>
+    <template v-else>
+      <section class="first-prize">
+        <div>
+          <p class="eyebrow">First Prize · {{ formatBaht(draw.firstReward) }}</p>
+          <p class="first-number">{{ draw.firstPrize }}</p>
+        </div>
+        <div v-if="draw.adjacent.length" class="adjacent">
+          <p class="eyebrow">Adjacent numbers · {{ formatBaht(draw.adjacentReward) }}</p>
+          <div class="chip-row">
+            <NumberChip v-for="number in draw.adjacent" :key="number" :value="number" />
+          </div>
+        </div>
+      </section>
+
+      <div class="prize-grid">
+        <PrizeCard v-for="prize in gridPrizes" :key="prize.id" :prize="prize" />
+        <PrizeCard :prize="front3Prize" />
+        <PrizeCard :prize="back3Prize" />
+        <PrizeCard :prize="last2Prize" />
       </div>
-      <div class="card-body">
-        <p class="card-text">{{ winner.prize }}</p>
-        <p class="card-text">{{ winner.location }}</p>
-      </div>
-    </div> -->
-  </div>
+    </template>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import NumberChip from '@/components/NumberChip.vue'
+import PrizeCard from '@/components/PrizeCard.vue'
+import { formatBaht, formatDrawDate, getDrawByDate, getDrawDates, getLatestDraw } from '@/services/lotteryApi'
+
 export default {
-  name: "LotteryWinners",
+  name: 'LotteryWinners',
+  components: { NumberChip, PrizeCard },
   data() {
     return {
-      winners: [],
-      flag: false,
-      // winners: [
-      //   {
-      //     id: 1,
-      //     position: "1st",
-      //     name: "John Doe",
-      //     prize: "$10,000",
-      //     image: "path/to/winner1.jpg",
-      //   },
-      //   {
-      //     id: 2,
-      //     position: "2nd",
-      //     name: "Jane Smith",
-      //     prize: "$5,000",
-      //     image: "path/to/winner2.jpg",
-      //   },
-      //   // Add more winner objects as needed
-      // ],
-    };  
+      dates: [],
+      selectedDate: null,
+      draw: null,
+      error: null
+    }
   },
-    methods: {
-    fetchData() {
-      axios.get('https://lotto.api.rayriffy.com/latest')
-        .then(response => {
-          this.winners = response.data.response;
-          // Handle the response data
-          console.log(response.data);
-        })
-        .catch(error => {
-          // Handle any errors
-          console.error(error);
-        });
+  computed: {
+    selectedIndex() {
+      return this.dates.indexOf(this.selectedDate)
+    },
+    gridPrizes() {
+      return this.draw.prizes.filter((p) => p.id !== 'first' && p.id !== 'near1')
+    },
+    front3Prize() {
+      return { id: 'front3', name: '3-Digit Front', reward: this.draw.front3Reward, numbers: this.draw.front3 }
+    },
+    back3Prize() {
+      return { id: 'back3', name: '3-Digit Back', reward: this.draw.back3Reward, numbers: this.draw.back3 }
+    },
+    last2Prize() {
+      return { id: 'last2', name: '2-Digit', reward: this.draw.last2Reward, numbers: this.draw.last2 ? [this.draw.last2] : [] }
+    }
+  },
+  watch: {
+    selectedDate(date, previous) {
+      if (date && previous !== null) this.load()
     }
   },
   created() {
-    this.fetchData(); // Call the API when the component is created
+    this.load()
+  },
+  methods: {
+    formatBaht,
+    formatDrawDate,
+    step(offset) {
+      const next = this.dates[this.selectedIndex + offset]
+      if (next) this.selectedDate = next
+    },
+    async load() {
+      this.error = null
+      this.draw = null
+      try {
+        if (!this.dates.length) {
+          this.dates = await getDrawDates()
+        }
+        if (!this.selectedDate) {
+          const latest = await getLatestDraw()
+          this.selectedDate = this.dates.includes(latest.date) ? latest.date : this.dates[0]
+          this.draw = latest
+          return
+        }
+        this.draw = await getDrawByDate(this.selectedDate)
+      } catch (err) {
+        this.error = err.message || 'Could not load this draw'
+      }
+    }
   }
-};
+}
 </script>
 
 <style scoped>
-.lottery-winners {
-  text-align: center;
+.winners {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  text-align: left;
 }
 
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.winners-list {
+.winners-header {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
 }
 
-.winner {
-  width: 80%;
-  margin: 10px;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.winners-header h1 {
+  margin: 0;
+  font-size: 28px;
 }
 
-.winner-info {
-  margin-bottom: 10px;
+.draw-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.position {
-  font-weight: bold;
+.draw-picker button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #2b2b2b;
+  border-radius: 6px;
+  background: none;
   font-size: 18px;
+  cursor: pointer;
 }
 
-.name {
+.draw-picker button:disabled {
+  border-color: #c9c9c9;
+  color: #c9c9c9;
+  cursor: not-allowed;
+}
+
+.draw-picker select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #c9c9c9;
+  border-radius: 6px;
+  font: inherit;
   font-size: 16px;
 }
 
-.prize {
-  font-size: 14px;
+.status {
+  margin: 0;
+  color: #6b6b6b;
 }
 
-.winner-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
+.status.error {
+  color: #b3261e;
 }
 
-@media (max-width: 767px) {
-  .winner {
-    width: 100%;
+.retry {
+  min-height: 44px;
+  padding: 0 12px;
+  margin-left: 8px;
+  border: 1px solid #2b2b2b;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.first-prize {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 28px;
+  border: 2px solid #d97706;
+  border-radius: 8px;
+}
+
+.eyebrow {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+
+.first-number {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 6px;
+}
+
+.chip-row {
+  display: flex;
+  gap: 10px;
+}
+
+.prize-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .prize-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.winner-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.card {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 300px;
-}
-
-.card-header {
-  padding: 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.card-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.card-subtitle {
-  font-size: 14px;
-  color: #777;
-}
-
-.card-body {
-  padding: 20px;
-}
-
-.card-text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
+@media (max-width: 767px) {
+  .prize-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="about">
     <h1>How It Works</h1>
     <p>
-      ထောပြီ is an unofficial viewer for Thailand Government Lottery results. It shows the
+      HtiMart is a shop and results viewer for the Thailand Government Lottery. It shows the
       latest draw, past results, and winning numbers, and checks your tickets against every
       prize category of any draw.
     </p>
@@ -56,7 +56,7 @@
       </dd>
       <dt>Is this the official lottery site?</dt>
       <dd>
-        No — ထောပြီ is an independent viewer. The numbers come live from the official
+        No — HtiMart is an independent service. The numbers come live from the official
         Government Lottery Office, but only the GLO's own publication is authoritative.
       </dd>
       <dt>Can one ticket win more than one prize?</dt>

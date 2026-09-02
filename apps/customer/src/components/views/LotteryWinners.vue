@@ -49,9 +49,7 @@
 </template>
 
 <script>
-import AppIcon from '@/components/AppIcon.vue'
-import NumberChip from '@/components/NumberChip.vue'
-import PrizeCard from '@/components/PrizeCard.vue'
+import { AppIcon, NumberChip, PrizeCard } from '@htawpyi/shared-ui'
 import TicketChecker from '@/components/TicketChecker.vue'
 import { formatBaht, formatDrawDate, getDrawByDate, getDrawDates, getLatestDraw } from '@/services/lotteryApi'
 

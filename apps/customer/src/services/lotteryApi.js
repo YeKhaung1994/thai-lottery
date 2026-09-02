@@ -100,12 +100,23 @@ export function checkTicket(draw, ticket) {
   return wins
 }
 
-export function formatDrawDate(isoDate) {
-  const d = new Date(`${isoDate}T00:00:00`)
-  if (Number.isNaN(d.getTime())) return isoDate
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+
+
+// Draws are on the 1st and 16th of each month. Given the last draw's ISO
+// date, returns the next draw as a Date (local midnight).
+export function nextDrawDateFrom(lastDrawIso) {
+  const last = new Date(`${lastDrawIso}T00:00:00`)
+  if (Number.isNaN(last.getTime())) return null
+  const next = new Date(last)
+  if (last.getDate() < 16) {
+    next.setDate(16)
+  } else {
+    next.setMonth(next.getMonth() + 1, 1)
+  }
+  return next
 }
 
-export function formatBaht(amount) {
-  return `฿${Number(amount).toLocaleString('en-US')}`
-}
+// Formatters live in the shared UI library; re-exported for convenience.
+// (Imported from the utils module directly so pure-JS consumers — and Jest,
+// which has no .vue transformer — never touch the component barrel.)
+export { formatBaht, formatDrawDate } from '@htawpyi/shared-ui/utils/format'

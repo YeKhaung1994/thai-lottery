@@ -1,19 +1,40 @@
 <template>
   <header class="app-header">
     <router-link to="/" class="brand">
-      <img class="brand-logo" src="../assets/brand-ticket.svg" alt="ထောပြီ" />
+      <img class="brand-logo" src="~@htawpyi/shared-ui/assets/brand-ticket.svg" alt="" />
+      <span class="brand-name">HtiMart</span>
     </router-link>
     <nav class="top-nav" aria-label="Main navigation">
       <router-link to="/">Home</router-link>
+      <router-link to="/buy">Buy Tickets</router-link>
       <router-link to="/history">History</router-link>
       <router-link to="/how-it-works">How It Works</router-link>
     </nav>
+    <div class="account">
+      <template v-if="isLoggedIn">
+        <router-link to="/purchases" class="account-link">{{ email }}</router-link>
+        <button type="button" class="logout" @click="signOut">Log out</button>
+      </template>
+      <router-link v-else to="/login" class="account-link">Log in</router-link>
+    </div>
   </header>
 </template>
 
 <script>
+import { useAuth } from '@/composables/useAuth'
+
 export default {
-  name: 'AppHeader'
+  name: 'AppHeader',
+  setup() {
+    const { isLoggedIn, email, logout } = useAuth()
+    return { isLoggedIn, email, logout }
+  },
+  methods: {
+    signOut() {
+      this.logout()
+      if (this.$route.meta.requiresAuth) this.$router.push('/')
+    }
+  }
 }
 </script>
 
@@ -42,11 +63,19 @@ export default {
 }
 
 .brand-logo {
-  width: 100px;
-  height: 70px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
   border-radius: 10px;
   display: block;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 .top-nav {
@@ -73,6 +102,43 @@ export default {
 .top-nav a.router-link-active {
   color: #d97706;
   border-bottom-color: #d97706;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #b45309;
+  text-decoration: none;
+}
+
+.account-link:hover {
+  color: #92400e;
+}
+
+.logout {
+  min-height: 44px;
+  padding: 0 12px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.logout:hover {
+  color: #b3261e;
 }
 
 @media (max-width: 767px) {

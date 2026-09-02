@@ -11,6 +11,11 @@ module.exports = defineConfig({
         target: process.env.GLO_PROXY_TARGET || 'https://www.glo.or.th',
         changeOrigin: true,
         pathRewrite: { '^/glo': '' }
+      },
+      // Platform API (apps/api).
+      '/api': {
+        target: process.env.PLATFORM_API_TARGET || 'http://localhost:5210',
+        changeOrigin: true
       }
     }
   }

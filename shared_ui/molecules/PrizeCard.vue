@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import NumberChip from './NumberChip.vue'
-import { formatBaht } from '@/services/lotteryApi'
+import NumberChip from '../atoms/NumberChip.vue'
+import { formatBaht } from '../utils/format'
 
 export default {
   name: 'PrizeCard',

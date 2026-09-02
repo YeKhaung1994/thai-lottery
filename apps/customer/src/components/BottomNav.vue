@@ -7,6 +7,13 @@
       </svg>
       <span>Home</span>
     </router-link>
+    <router-link to="/buy">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6Z"></path>
+        <line x1="14" y1="5" x2="14" y2="19" stroke-dasharray="2 3"></line>
+      </svg>
+      <span>Buy</span>
+    </router-link>
     <router-link to="/history">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="4" y="3" width="16" height="18" rx="2"></rect>

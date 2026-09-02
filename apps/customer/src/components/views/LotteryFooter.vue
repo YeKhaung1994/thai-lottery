@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <p>© {{ year }} ထောပြီ — unofficial Thai lottery results viewer. Data: Government Lottery Office (glo.or.th).</p>
+    <p>© {{ year }} HtiMart — Thai lottery tickets & results. Data: Government Lottery Office (glo.or.th).</p>
   </footer>
 </template>
 

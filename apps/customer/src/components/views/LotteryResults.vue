@@ -42,6 +42,7 @@
             :loading="loadingDates.includes(date)"
             :error="drawErrors[date] || null"
             :expanded="expandedDate === date"
+            :details-to="`/draws/${date}`"
             @toggle="toggleDraw(date)"
             @retry="fetchDraw(date)"
           />
@@ -62,7 +63,7 @@
 </template>
 
 <script>
-import DrawCard from '@/components/DrawCard.vue'
+import { DrawCard } from '@htawpyi/shared-ui'
 import { formatDrawDate, getDrawByDate, getDrawDates } from '@/services/lotteryApi'
 
 export default {

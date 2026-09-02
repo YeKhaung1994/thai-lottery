@@ -1,3 +1,11 @@
 # Local Claude Code skills/config — not shared via the repo
 .claude/
 .DS_Store
+db/.env
+
+# Dependencies & build output (all apps)
+node_modules/
+dist/
+# .NET
+bin/
+obj/

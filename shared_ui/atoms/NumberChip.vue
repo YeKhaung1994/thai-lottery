@@ -26,7 +26,8 @@ export default {
   border: 1px solid var(--line);
   border-radius: 999px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   color: var(--ink);
   background: var(--cream);

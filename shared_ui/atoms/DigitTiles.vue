@@ -45,6 +45,7 @@ export default {
   border-radius: 10px;
   font-size: 38px;
   font-weight: 700;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   background: #ffffff;
   box-shadow: var(--shadow);

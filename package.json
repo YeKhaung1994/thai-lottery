@@ -1,0 +1,14 @@
+{
+  "name": "htawpyi-platform",
+  "private": true,
+  "scripts": {
+    "dev:customer": "npm run serve --prefix apps/customer",
+    "dev:admin": "npm run serve --prefix apps/admin",
+    "dev:api": "dotnet run --project apps/api/src/HtawPyi.Api",
+    "build:customer": "npm run build --prefix apps/customer",
+    "build:admin": "npm run build --prefix apps/admin",
+    "test:customer": "npm test --prefix apps/customer",
+    "test:admin": "npm test --prefix apps/admin",
+    "test:api": "dotnet test apps/api"
+  }
+}

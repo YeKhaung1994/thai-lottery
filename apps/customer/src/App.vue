@@ -5,39 +5,22 @@
   </main>
   <LotteryFooter />
   <BottomNav />
+  <ToastHost />
 </template>
 
 <script>
+import { ToastHost } from '@htawpyi/shared-ui'
 import AppHeader from './components/AppHeader.vue'
 import BottomNav from './components/BottomNav.vue'
 import LotteryFooter from './components/views/LotteryFooter.vue'
 
 export default {
   name: 'App',
-  components: { AppHeader, BottomNav, LotteryFooter }
+  components: { ToastHost, AppHeader, BottomNav, LotteryFooter }
 }
 </script>
 
 <style>
-:root {
-  /* Palette derived from the htawpyi ticket logo. */
-  --ink: #2b2b2b;
-  --muted: #6b6455;
-  --red: #d2232a;
-  --red-tint: #fdeeee;
-  --amber: #d97706;
-  --amber-dark: #b45309;
-  --amber-tint: #fdf3e0;
-  --gold: #f2b01e;
-  --teal: #3aa6b9;
-  --teal-tint: #e9f5f8;
-  --cream: #faf6ec;
-  --card: #ffffff;
-  --line: #eee6d6;
-  --radius: 12px;
-  --shadow: 0 1px 2px rgba(64, 48, 15, 0.06), 0 6px 16px rgba(64, 48, 15, 0.06);
-}
-
 body {
   margin: 0;
   background: var(--cream);
@@ -67,5 +50,17 @@ body {
   .page {
     padding: 20px 16px;
   }
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
 </style>

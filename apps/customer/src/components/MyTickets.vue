@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import AppIcon from '@/components/AppIcon.vue'
+import { AppIcon } from '@htawpyi/shared-ui'
 import { checkTicket, formatBaht } from '@/services/lotteryApi'
 import { useMyTickets } from '@/composables/useMyTickets'
 

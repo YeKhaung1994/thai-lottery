@@ -26,16 +26,16 @@
         <div class="prize-grid">
           <PrizeCard v-for="prize in secondaryPrizes" :key="prize.id" :prize="prize" :collapse-at="5" />
         </div>
-        <router-link class="open-draw" :to="`/draws/${date}`">Open draw details →</router-link>
+        <router-link v-if="detailsTo" class="open-draw" :to="detailsTo">Open draw details →</router-link>
       </template>
     </div>
   </article>
 </template>
 
 <script>
-import NumberChip from './NumberChip.vue'
+import NumberChip from '../atoms/NumberChip.vue'
 import PrizeCard from './PrizeCard.vue'
-import { formatBaht, formatDrawDate } from '@/services/lotteryApi'
+import { formatBaht, formatDrawDate } from '../utils/format'
 
 export default {
   name: 'DrawCard',
@@ -60,6 +60,10 @@ export default {
     expanded: {
       type: Boolean,
       default: false
+    },
+    detailsTo: {
+      type: String,
+      default: null
     }
   },
   emits: ['toggle', 'retry'],

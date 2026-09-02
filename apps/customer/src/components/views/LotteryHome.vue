@@ -1,5 +1,7 @@
 <template>
   <div class="home">
+    <DrawStrip :draw="draw" :awaiting-results="awaitingResults" />
+
     <div class="hero">
       <section class="latest-card">
         <template v-if="draw">
@@ -7,13 +9,14 @@
           <h1>First Prize Winning Number</h1>
           <DigitTiles :number="draw.firstPrize" accent />
           <p class="reward">Prize: {{ formatBaht(draw.firstReward) }}</p>
-          <p v-if="awaitingResults" class="draw-day-note">
-            Draw day — new results usually appear from 14:30 (Thailand time). This page refreshes automatically.
-          </p>
         </template>
         <template v-else-if="loading">
           <p class="eyebrow">Latest draw</p>
-          <h1>Loading the latest results…</h1>
+          <SkeletonBlock height="26px" width="60%" />
+          <div class="skeleton-tiles">
+            <SkeletonBlock v-for="n in 6" :key="n" width="56px" height="68px" rounded />
+          </div>
+          <SkeletonBlock height="18px" width="40%" />
         </template>
         <template v-else>
           <p class="eyebrow">Latest draw</p>
@@ -26,6 +29,19 @@
     </div>
 
     <TicketChecker :draw="draw" />
+
+    <section v-if="teaser.length" class="shop-teaser">
+      <div class="recent-header">
+        <h2>Tickets on sale</h2>
+        <router-link to="/buy">Browse all →</router-link>
+      </div>
+      <div class="teaser-grid">
+        <router-link v-for="ticket in teaser" :key="ticket.id" class="teaser-card" to="/buy">
+          <TicketNumber :value="ticket.number" size="lg" />
+          <span class="teaser-meta">{{ formatDrawDate(ticket.drawDate) }} · {{ formatBaht(ticket.price) }}</span>
+        </router-link>
+      </div>
+    </section>
 
     <section v-if="draw" class="glance">
       <h2>Latest draw at a glance</h2>
@@ -45,11 +61,6 @@
           <span class="glance-value">{{ draw.back3.join(' · ') }}</span>
           <span class="glance-sub">{{ formatBaht(draw.back3Reward) }}</span>
         </div>
-        <div class="glance-card">
-          <span class="glance-label"><AppIcon name="clock" :size="16" /> Next draw</span>
-          <span class="glance-value">{{ nextDrawLabel }}</span>
-          <span class="glance-sub">{{ nextDrawCountdown }}</span>
-        </div>
       </div>
     </section>
 
@@ -62,7 +73,7 @@
       <div v-else class="recent-list">
         <router-link v-for="item in recentDraws" :key="item.date" class="recent-row" :to="`/draws/${item.date}`">
           <span>{{ formatDrawDate(item.date) }}</span>
-          <span class="recent-number">First prize: {{ item.firstPrize || '…' }}</span>
+          <span class="recent-number">First prize: <TicketNumber :value="item.firstPrize || '······'" size="sm" /></span>
           <span class="recent-more">details ›</span>
         </router-link>
       </div>
@@ -71,16 +82,17 @@
 </template>
 
 <script>
-import AppIcon from '@/components/AppIcon.vue'
-import DigitTiles from '@/components/DigitTiles.vue'
+import { AppIcon, DigitTiles, SkeletonBlock, TicketNumber } from '@htawpyi/shared-ui'
 import TicketChecker from '@/components/TicketChecker.vue'
 import MyTickets from '@/components/MyTickets.vue'
+import DrawStrip from '@/components/DrawStrip.vue'
 import { useLatestDraw } from '@/composables/useLatestDraw'
 import { formatBaht, formatDrawDate, getDrawByDate, getDrawDates } from '@/services/lotteryApi'
+import { searchTickets } from '@/services/platformApi'
 
 export default {
   name: 'LotteryHome',
-  components: { AppIcon, DigitTiles, TicketChecker, MyTickets },
+  components: { AppIcon, DigitTiles, SkeletonBlock, TicketNumber, TicketChecker, MyTickets, DrawStrip },
   setup() {
     const { draw, loading, error, retry, refresh } = useLatestDraw()
     return { draw, loading, error, retry, refresh }
@@ -88,7 +100,8 @@ export default {
   data() {
     return {
       recentDraws: [],
-      recentError: null
+      recentError: null,
+      teaser: []
     }
   },
   computed: {
@@ -105,33 +118,11 @@ export default {
     },
     awaitingResults() {
       return this.isDrawDay && (!this.draw || this.draw.date !== this.bangkokToday)
-    },
-    nextDrawDate() {
-      // Draws are on the 1st and 16th of each month.
-      if (!this.draw) return null
-      const last = new Date(`${this.draw.date}T00:00:00`)
-      const next = new Date(last)
-      if (last.getDate() < 16) {
-        next.setDate(16)
-      } else {
-        next.setMonth(next.getMonth() + 1, 1)
-      }
-      return next
-    },
-    nextDrawLabel() {
-      return this.nextDrawDate
-        ? this.nextDrawDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-        : ''
-    },
-    nextDrawCountdown() {
-      if (!this.nextDrawDate) return ''
-      const days = Math.ceil((this.nextDrawDate - new Date()) / 86400000)
-      if (days <= 0) return 'today'
-      return `in ${days} day${days === 1 ? '' : 's'}`
     }
   },
   created() {
     this.loadRecent()
+    this.loadTeaser()
   },
   mounted() {
     // Draw-day mode: poll until today's results are announced.
@@ -146,6 +137,13 @@ export default {
   methods: {
     formatBaht,
     formatDrawDate,
+    async loadTeaser() {
+      try {
+        this.teaser = (await searchTickets('')).slice(0, 4)
+      } catch {
+        this.teaser = [] // Shop may be empty or API down — hide the section.
+      }
+    },
     async loadRecent() {
       try {
         const dates = await getDrawDates()
@@ -217,14 +215,44 @@ export default {
   font-size: 18px;
 }
 
-.draw-day-note {
-  margin: 0;
-  padding: 10px 14px;
-  background: var(--teal-tint);
-  border: 1px solid #cde7ed;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #23808f;
+.skeleton-tiles {
+  display: flex;
+  gap: 10px;
+}
+
+.teaser-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.teaser-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.teaser-card:hover {
+  border-color: var(--amber);
+  transform: translateY(-1px);
+}
+
+.teaser-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.shop-teaser h2 {
+  margin: 0 0 14px 0;
+  font-size: 22px;
 }
 
 .retry {
@@ -375,6 +403,10 @@ export default {
   }
 
   .glance-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teaser-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

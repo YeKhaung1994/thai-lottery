@@ -40,6 +40,22 @@ function message(error) {
   return error.response?.data?.title || error.message || 'Something went wrong'
 }
 
+// Listeners fired when the session ends on token expiry.
+const expiredHandlers = []
+export function onSessionExpired(fn) {
+  expiredHandlers.push(fn)
+}
+
+// Admin has no refresh token, so a 401 on an authenticated call means the
+// session is over. (Login itself runs with no auth, so it is exempt.)
+client.interceptors.response.use(undefined, (error) => {
+  if (error.response?.status === 401 && currentAuth) {
+    setAuth(null)
+    expiredHandlers.forEach((fn) => fn())
+  }
+  throw error
+})
+
 async function call(promise) {
   try {
     return (await promise).data

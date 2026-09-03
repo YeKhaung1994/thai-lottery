@@ -11,7 +11,8 @@ import LoginView from './components/views/LoginView.vue'
 import MyPurchases from './components/views/MyPurchases.vue'
 import MockPay from './components/views/MockPay.vue'
 import CheckoutView from './components/views/CheckoutView.vue'
-import { getAuth } from './services/platformApi'
+import { useToasts } from '@htawpyi/shared-ui'
+import { getAuth, onSessionExpired } from './services/platformApi'
 
 const routes = [
   { path: '/', component: LotteryHome, meta: { title: 'HtiMart — Thai Lottery Results' } },
@@ -57,6 +58,16 @@ router.beforeEach((to) => {
 
 router.afterEach((to) => {
   document.title = to.meta.title || 'HtiMart'
+})
+
+// Session expired (refresh failed): tell the user and send them to log in,
+// preserving where they were so they land back after re-authenticating.
+onSessionExpired(() => {
+  useToasts().push('Your session has expired — please log in again.', 'danger')
+  const current = router.currentRoute.value
+  if (current.path !== '/login') {
+    router.push({ path: '/login', query: { next: current.fullPath } })
+  }
 })
 
 createApp(App).use(router).mount('#app')

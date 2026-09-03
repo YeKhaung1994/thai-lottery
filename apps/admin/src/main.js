@@ -1,8 +1,9 @@
 import { createApp } from 'vue'
 import '@htawpyi/shared-ui/tokens.css'
+import { useToasts } from '@htawpyi/shared-ui'
 import { createRouter, createWebHistory } from 'vue-router'
-import App from './App.vue'
-import { getAuth } from './services/adminApi'
+import App, { authState } from './App.vue'
+import { getAuth, onSessionExpired } from './services/adminApi'
 import AdminLogin from './views/AdminLogin.vue'
 import DashboardView from './views/DashboardView.vue'
 import UploadTickets from './views/UploadTickets.vue'
@@ -26,6 +27,13 @@ router.beforeEach((to) => {
 
 router.afterEach((to) => {
   document.title = to.meta.title || 'HtiMart Admin'
+})
+
+// Session expired: clear the shared auth ref, alert, and go to login.
+onSessionExpired(() => {
+  authState.value = null
+  useToasts().push('Your session has expired — please log in again.', 'danger')
+  if (router.currentRoute.value.path !== '/login') router.push('/login')
 })
 
 createApp(App).use(router).mount('#app')

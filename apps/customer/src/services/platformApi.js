@@ -42,18 +42,35 @@ client.interceptors.request.use((config) => {
   return config
 })
 
+// Listeners fired when the session ends on token expiry (toast, redirect,
+// ref sync). Multiple parts of the app can subscribe.
+const expiredHandlers = []
+export function onSessionExpired(fn) {
+  expiredHandlers.push(fn)
+}
+
+function expireSession() {
+  const hadSession = !!currentAuth
+  setAuth(null)
+  if (hadSession) expiredHandlers.forEach((fn) => fn())
+}
+
 let refreshing = null
 
 client.interceptors.response.use(undefined, async (error) => {
   const { response, config } = error
-  if (response?.status !== 401 || config._retried || !currentAuth?.refreshToken) {
+  if (response?.status !== 401 || config._retried) throw error
+
+  // 401 on an authenticated request: try to refresh, else the session is over.
+  if (!currentAuth?.refreshToken) {
+    expireSession()
     throw error
   }
   config._retried = true
   refreshing = refreshing || axios
     .post('/api/auth/refresh', { refreshToken: currentAuth.refreshToken })
     .then(({ data }) => setAuth(data))
-    .catch(() => setAuth(null))
+    .catch(() => expireSession())
     .finally(() => {
       refreshing = null
     })
